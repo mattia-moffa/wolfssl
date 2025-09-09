@@ -4508,15 +4508,15 @@ int wolfSSL_shutdown(WOLFSSL* ssl)
 
         /* call wolfSSL_shutdown again for bidirectional shutdown */
         if (ssl->options.sentNotify && !ssl->options.closeNotify) {
-            ret = ProcessReply(ssl);
-            if ((ret == WC_NO_ERR_TRACE(ZERO_RETURN)) ||
-                (ret == WC_NO_ERR_TRACE(SOCKET_ERROR_E))) {
+            ssl->error = ProcessReply(ssl);
+            if ((ssl->error == WC_NO_ERR_TRACE(ZERO_RETURN)) ||
+                (ssl->error == WC_NO_ERR_TRACE(SOCKET_ERROR_E))) {
                 /* simulate OpenSSL behavior */
                 ssl->options.shutdownDone = 1;
                 /* Clear error */
                 ssl->error = WOLFSSL_ERROR_NONE;
                 ret = WOLFSSL_SUCCESS;
-            } else if (ret == WC_NO_ERR_TRACE(MEMORY_E)) {
+            } else if (ssl->error == WC_NO_ERR_TRACE(MEMORY_E)) {
                 ret = WOLFSSL_FATAL_ERROR;
             } else if (ssl->error == WOLFSSL_ERROR_NONE) {
                 ret = WOLFSSL_SHUTDOWN_NOT_DONE;
